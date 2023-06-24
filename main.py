@@ -23,23 +23,22 @@ def generate_image(prompt: str):
                 file.write(response.content)
             print("Image downloaded and saved successfully.")
         else:
-            print("Failed to download the image.")
+            print("Failed to download the image(s).")
     print(image_resp)
 
 
 def main():
-    openai.organization = os.getenv("OPENAI_ORG")
-    openai.api_key = os.getenv("OPENAI_KEY")
+    openai.organization = os.getenv("OPENAI_ORG").strip()
+    openai.api_key = os.getenv("OPENAI_KEY").strip()
     if openai.organization is None or openai.api_key is None:
-        print("missing required environment variables")
-
+        raise Exception("missing required environment variables")
     try:
         _, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
     except getopt.GetoptError:
         print('test.py -i <inputfile> -o <outputfile>')
         sys.exit(2)
     if len(args) < 2:
-        print("not enough args")
+        raise Exception("not enough args")
     else:
         generate_image(args[1])
 

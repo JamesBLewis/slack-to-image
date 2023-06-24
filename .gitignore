@@ -21,4 +21,4 @@
 go.work
 
 # generated images
-image/output/*
+output/*.png
