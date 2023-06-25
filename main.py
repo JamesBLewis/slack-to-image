@@ -1,46 +1,72 @@
-import getopt
-import sys
-from sys import argv
-
 import openai
-import requests
 import os
+import re
+
+from slack_bolt import App
+from slack_bolt.adapter.socket_mode import SocketModeHandler
+
+app_token = os.getenv("SLACK_XAPP").strip()
+bot_token = os.getenv("SLACK_XOXB").strip()
+
+# consts
+LOADING_STATE = "loading..."
+
+pat = re.compile(r'\Ax[1-9][0-9]*')
+app = App(token=bot_token)
 
 
-def generate_image(prompt: str):
-    image_resp = openai.Image.create(prompt=prompt, n=4, size="512x512")
-    for idx, data in enumerate(image_resp["data"]):
-        folder_path = "output"  # Replace with the desired folder path
-        # Extract the filename from the URL
-        filename = "{}_{}.png".format("".join(c if c.isalnum() else "_" for c in prompt)[:40], idx)
-        # Make a GET request to the URL
-        response = requests.get(data["url"])
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            # Save the image to the folder
-            file_path = os.path.join(folder_path, filename)
-            with open(file_path, "wb") as file:
-                file.write(response.content)
-            print("Image downloaded and saved successfully.")
-        else:
-            print("Failed to download the image(s).")
+def create_response(prompt: str):
+    blocks = []
+    count = 1
+    multiplier = prompt.split(" ")[0]
+    if pat.match(multiplier):
+        value = int(multiplier[1:])
+        if 0 < value < 11:
+            count = value
+    images = generate_image(prompt, count)
+    for image_url in images:
+        blocks.append(
+            {
+                "type": "image",
+                "title": {
+                    "type": "plain_text",
+                    "text": prompt,
+                    "emoji": True
+                },
+                "image_url": image_url,
+                "alt_text": prompt,
+            }
+        )
+    return blocks
+
+
+@app.command("/imagine")
+def custom_command_function(ack, respond, command):
+    ack()
+    respond(response_type="ephemeral", text="loading...")
+    if command["text"] == "":
+        respond(response_type="ephemeral", text="please specify a prompt and try again.", replace_original=True)
+        return
+    response_blocks = create_response(command["text"])
+    respond(response_type="in_channel", blocks=response_blocks, unfurl_media=True, unfurl_links=True,
+            delete_original=True)
+
+
+def generate_image(prompt: str, quantity: int):
+    image_resp = openai.Image.create(prompt=prompt, n=quantity, size="512x512")
+    image_urls = []
+    for data in image_resp["data"]:
+        image_urls.append(data["url"])
     print(image_resp)
+    return image_urls
 
 
 def main():
     openai.organization = os.getenv("OPENAI_ORG").strip()
     openai.api_key = os.getenv("OPENAI_KEY").strip()
-    if openai.organization is None or openai.api_key is None:
-        raise Exception("missing required environment variables")
-    try:
-        _, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
-    except getopt.GetoptError:
-        print('test.py -i <inputfile> -o <outputfile>')
-        sys.exit(2)
-    if len(args) < 2:
-        raise Exception("not enough args")
-    else:
-        generate_image(args[1])
+    handler = SocketModeHandler(app, app_token)
+    handler.start()
 
 
-main()
+if __name__ == '__main__':
+    main()
