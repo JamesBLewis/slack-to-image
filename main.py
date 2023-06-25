@@ -10,8 +10,9 @@ bot_token = os.getenv("SLACK_XOXB").strip()
 
 # consts
 LOADING_STATE = "loading..."
+MULTIPLIER_PATTERN = re.compile(r'\Ax[1-9][0-9]*')
 
-pat = re.compile(r'\Ax[1-9][0-9]*')
+# app
 app = App(token=bot_token)
 
 
@@ -19,7 +20,7 @@ def create_response(prompt: str):
     blocks = []
     count = 1
     multiplier = prompt.split(" ")[0]
-    if pat.match(multiplier):
+    if MULTIPLIER_PATTERN.match(multiplier):
         value = int(multiplier[1:])
         if 0 < value < 11:
             count = value
@@ -64,6 +65,10 @@ def generate_image(prompt: str, quantity: int):
 def main():
     openai.organization = os.getenv("OPENAI_ORG").strip()
     openai.api_key = os.getenv("OPENAI_KEY").strip()
+    # verify env variables have been loaded correctly
+    if openai.organization == "" or openai.api_key == "" or app_token == "" or bot_token == "":
+        raise Exception("one or more environment variables could not be loaded")
+    # create socket handler and start accepting connections
     handler = SocketModeHandler(app, app_token)
     handler.start()
 
