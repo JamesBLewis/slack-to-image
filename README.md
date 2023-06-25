@@ -38,8 +38,8 @@ To run this Slack bot, you need to have the following prerequisites:
 
 All you need from here is an ORG_KEY and API key.
 
-1. fetch your org key (OPENAI_ORG) from the [account settings page](https://platform.openai.com/account/org-settings).
-2. create a new API key (OPENAI_KEY) on the [API key Page](https://platform.openai.com/account/api-keys).
+1. Fetch your org key (OPENAI_ORG) from the [account settings page](https://platform.openai.com/account/org-settings).
+2. Create a new API key (OPENAI_KEY) on the [API key Page](https://platform.openai.com/account/api-keys).
 
 ### Slack
 
