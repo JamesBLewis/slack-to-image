@@ -9,7 +9,7 @@ To run this Slack bot, you need to have the following prerequisites:
 
 - Python (version 3.7 or higher)
 - Slack workspace with the ability to add a new app
-- OpenAI API key
+- OpenAI org and API keys
 - Slack app token and bot token
 
 ## Installation
