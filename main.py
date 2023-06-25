@@ -1,7 +1,7 @@
-import openai
 import os
 import re
 
+import openai
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
@@ -41,7 +41,7 @@ def create_response(prompt: str):
 
 
 @app.command("/imagine")
-def custom_command_function(ack, respond, command):
+def imagine_command(ack, respond, command):
     ack()
     respond(response_type="ephemeral", text="loading...")
     if command["text"] == "":
