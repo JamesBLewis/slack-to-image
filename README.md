@@ -92,3 +92,7 @@ If you want to contribute to this project, you can fork the repository, make cha
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Thanks
+
+Very heavily inspired by [slack-diffusion](https://github.com/dbut2/slack-diffusion) by [Dylan Butler](https://github.com/dbut2).
