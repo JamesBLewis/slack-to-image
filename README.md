@@ -23,7 +23,7 @@ To run this Slack bot, you need to have the following prerequisites:
 2. Change to the cloned repository's directory:
 
    ```
-   cd slack-to-image
+   cd slack-to-image/app
    ```
 
 3. Install the required Python dependencies:
@@ -70,7 +70,7 @@ Replace `<slack-app-token>`, `<slack-bot-token>`, `<openai-organization>`, and `
 To start the Slack bot, run the following command:
 
 ```
-python main.py
+python ./app/main.py
 ```
 
 The bot will establish a connection to your Slack workspace and start listening for commands.
