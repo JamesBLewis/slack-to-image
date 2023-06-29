@@ -19,11 +19,13 @@ app = App(token=bot_token)
 def create_response(prompt: str):
     blocks = []
     count = 1
-    multiplier = prompt.split(" ")[0]
+    prompt_list = prompt.split(" ")[0]
+    multiplier = prompt_list[0]
     if MULTIPLIER_PATTERN.match(multiplier):
         value = int(multiplier[1:])
         if 0 < value < 11:
             count = value
+        prompt = "".join(prompt_list[1:])
     images = generate_image(prompt, count)
     for image_url in images:
         blocks.append(
